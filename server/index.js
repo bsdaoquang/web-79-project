@@ -5,13 +5,14 @@ import mongoose from 'mongoose';
 import authRouter from './routers/authRouter.js';
 import taskRouter from './routers/taskRouter.js';
 import logger from './middlewares/logger.js';
+import verifyToken from './middlewares/verifyToken.js';
 
 dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 3001
 const dburl = `mongodb+srv://bsdaoquangyhocso:${process.env.DB_PASSWORD}@cluster0.z6pqsie.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
-
+ 
 app.use(express.json())
 app.use(cors())
 
