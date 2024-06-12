@@ -9,6 +9,9 @@ const UserSheme = new Schema({
     require: true,
     type: String
   },
+  email: {
+    type: String
+  },
   createdAt:{
     type: Date,
     default: Date.now()

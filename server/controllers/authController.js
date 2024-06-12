@@ -2,80 +2,99 @@
 
 import UserModel from '../models/UserModel.js';
 import bcrypt from 'bcrypt';
-import { JWT } from '../utils/getJsonWebToken.js';
+import jwt from 'jsonwebtoken';
+
 
 const login = async (req, res) => {
+	const body = req.body
+	const {username, password} = body
+
 	try {
-		const body = req.body;
-		const { username, password } = body;
+		const user = await UserModel.findOne({username})
 
-		if (!password || !username) {
-			throw new Error('Missing values');
+		if (!user) {
+			throw new Error('User not found')
 		}
 
-		const existingUser = await UserModel.findOne({ username });
-
-		if (!existingUser) {
-			res.status(401);
-			throw new Error('User not found');
-		}
-
-		const isMatchPassword = await bcrypt.compare(
-			password,
-			existingUser.password
-		);
+		const isMatchPassword= await bcrypt.compare(password, user.password)
 
 		if (!isMatchPassword) {
-			res.status(402);
-			throw new Error('User name or Password is not correct');
+			throw new Error('Username/Password is not correct'
+			)
 		}
 
+		const payload = {
+			_id: user._id,
+			email: user.email ?? '',
+			username,
+			rule: 0
+		}
+
+		const accesstoken =  jwt.sign(payload, process.env.SECRET_KEY)
+
 		res.status(200).json({
-			message: 'Welcome back!',
+			message: 'Login successfully!!',
 			data: {
-				username,
-				_id: existingUser._id,
-				accesstoken: JWT.GetJWT({ id: existingUser._id, username }),
-			},
-		});
+				username, email: user.email, _id: user._id, accesstoken
+			}
+		})
+
 	} catch (error) {
-		res.status(400).json({
-      message: error.message
-    })
-  }
+		res.status(405).json({
+			message: error.message,
+			data: []
+		})
+	}
+	
 };
 
 const register = async (req, res) => {
-	const body = req.body;
-	const { username, password } = body;
+	const body = req.body
+	const {username, password} = body
+	try {
+	
+		const user = await UserModel.findOne({username})
+		if (user) {
+			throw new Error('User is allready!!!')
+		}
 
-	if (!password || !username) {
-		throw new Error('Missing values');
-	}
 
-	const existingUser = await UserModel.findOne({ username });
+		const salt = await bcrypt.genSalt()
+		const hashPassword = await bcrypt.hash(password, salt)
 
-	if (existingUser) {
-		throw new Error('User is already!!!');
-	}
+		const newUser = new UserModel({
+			email: body.email,
+			username, 
+			password: hashPassword
+		})
 
-	const salt = await bcrypt.genSalt(10);
-	const hashPasword = await bcrypt.hash(password, salt);
+		await newUser.save()
 
-	const newUser = new UserModel({
-		username,
-		password: hashPasword,
-	});
 
-	await newUser.save();
-
-	res.status(201).json({
-		message: 'Register successfully',
-		data: {
+		const payload = {
+			_id: newUser._id,
+			email: newUser.email ?? '',
 			username,
-			accesstoken: JWT.GetJWT({ id: newUser._id, username }),
-		},
-	});
+			rule: 1
+		}
+
+		const accesstoken =  jwt.sign(payload, process.env.SECRET_KEY)
+
+
+		res.status(201).json({
+			message: 'Created',
+			data: {
+				username, email: body.email, _id: newUser._id, accesstoken
+			}
+		})
+
+	} catch (error) {
+		res.status(405).json({
+			message: error.message,
+			data: []
+		})
+	}
+	
 };
 
 export { login, register };

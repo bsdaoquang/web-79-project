@@ -1,11 +1,9 @@
-import express from 'express'
 import cors from 'cors';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import express from 'express';
 import mongoose from 'mongoose';
 import authRouter from './routers/authRouter.js';
 import taskRouter from './routers/taskRouter.js';
-import logger from './middlewares/logger.js';
-import verifyToken from './middlewares/verifyToken.js';
 
 dotenv.config()
 

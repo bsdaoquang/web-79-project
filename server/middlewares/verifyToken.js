@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 const verifyToken = async (req, res, next) => {
 	try {
 		const accesstoken = req.headers.authorization;
-		const token = accesstoken.split(' ')[1];
+		const token = accesstoken ? accesstoken.split(' ')[1] : '';
 
 		if (!token) {
 			res.status(401);
@@ -14,6 +14,8 @@ const verifyToken = async (req, res, next) => {
     const isVerify = jwt.verify(token, process.env.SECRET_KEY)
 		
 		if (isVerify) {
+			req.uid = isVerify._id
+			req.rule = isVerify.rule
 			next()
 		}else{
 			res.status(403);
