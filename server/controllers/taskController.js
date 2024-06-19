@@ -7,8 +7,6 @@ const addNewTask = async (req, res) => {
 		const { content } = req.body;
 		const id = req.uid;
 
-    console.log(id)
-
 		if (!content) {
 			throw new Error('Missing content');
 		}
@@ -35,7 +33,6 @@ const getTasks = async (req, res) => {
 	const id = req.uid;
 	try {
 		const tasks = await TaskModel.find({ createdBy: id });
-		console.log(tasks);
 		res.status(200).json({
 			message: 'Tasks',
 			data: tasks,
