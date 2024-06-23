@@ -1,5 +1,4 @@
 import TaskModel from '../models/TaskModel.js';
-import {tasks} from '../data/tasks.js';
 
 const addNewTask = async (req, res) => {
   const {content} = req.body
@@ -24,7 +23,7 @@ const getTasks = async(req, res) => {
 
   res.status(200).json({
     message: 'Tasks',
-    data: req.rule !== 0 ? []: tasks
+    data: []
   })
 }
 
