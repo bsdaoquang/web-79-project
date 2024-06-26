@@ -22,16 +22,23 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const dburl = `mongodb+srv://bsdaoquangyhocso:${process.env.DB_PASSWORD}@cluster0.z6pqsie.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
+// const corsOptions = {
+// 	origin: 'http://localhost:3000',
+// 	optionsSuccessStatus: 200
+// }
+
+// app.use(cors(corsOptions));
+app.use(cors())
 // multer
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+
 app.use(express.json());
-app.use(cors());
 
 app.use('/auth', authRouter);
 app.use('/tasks', taskRouter);
-app.use('/posts', postRouter)
+app.use('/posts',  postRouter)
 app.post('/upload', upload.single('file'), async (req, res) => {
 	const file = req.file;
 	try {
@@ -65,12 +72,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 		});
 	}
 });
-
-app.get('/hello', (req, res )=> {
-	res.send(`<h1>Hello ${req.query.name}</h1>`)
-})
-
-console.log('fafafafa')
 
 const connectDb = async () => {
 	try {
