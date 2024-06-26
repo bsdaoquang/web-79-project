@@ -66,6 +66,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 	}
 });
 
+app.get('/hello', (req, res )=> {
+	res.send(`<h1>Hello ${req.query.name}</h1>`)
+})
+
 const connectDb = async () => {
 	try {
 		await mongoose.connect(dburl);
